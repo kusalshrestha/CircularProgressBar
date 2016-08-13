@@ -15,6 +15,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        progressView.linearProgress = 0
+
     }
 
     @IBAction func progressWidthChange(sender: UISlider) {

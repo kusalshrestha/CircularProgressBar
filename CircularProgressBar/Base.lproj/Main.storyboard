@@ -18,21 +18,21 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Mh1-St-WQ5" customClass="SKProgressView" customModule="CircularProgressBar" customModuleProvider="target">
-                                <rect key="frame" x="40" y="184" width="240" height="200"/>
+                                <rect key="frame" x="40" y="164" width="240" height="240"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="240" id="af2-vl-RuV"/>
-                                    <constraint firstAttribute="height" constant="200" id="g5U-bt-bBl"/>
+                                    <constraint firstAttribute="height" constant="240" id="g5U-bt-bBl"/>
                                 </constraints>
                             </view>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.25" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="9LJ-YC-ZLd">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="9LJ-YC-ZLd">
                                 <rect key="frame" x="34" y="518" width="252" height="31"/>
                                 <connections>
                                     <action selector="progressWidthChange:" destination="BYZ-38-t0r" eventType="valueChanged" id="5K4-VJ-j7Z"/>
                                 </connections>
                             </slider>
                         </subviews>
-                        <color key="backgroundColor" red="0.72156862745098038" green="0.72156862745098038" blue="0.72156862745098038" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.039215686274509803" green="0.13333333333333333" blue="0.20784313725490194" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="9LJ-YC-ZLd" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="20" id="0sU-79-k8B"/>
                             <constraint firstAttribute="trailingMargin" secondItem="9LJ-YC-ZLd" secondAttribute="trailing" constant="20" id="fla-dz-TOQ"/>

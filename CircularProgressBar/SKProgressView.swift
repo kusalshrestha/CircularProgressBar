@@ -8,7 +8,7 @@
 
 import UIKit
 
-
+// Use this function for animation
 extension CALayer {
     
     public class func animateWithDuration(duration: NSTimeInterval, animation: () -> Void, completion: (() -> Void)?) {
@@ -26,13 +26,14 @@ let π: CGFloat = CGFloat(M_PI)
 class SKProgressView: UIView {
 
     var squareBounds = CGRectZero
+    var steps = [CAReplicatorLayer]()
     var progressBarWidth: CGFloat = 5 {
         didSet {
             self.setNeedsDisplay()
         }
     }
     
-    var linearProgress: CGFloat = 0 {
+    var linearProgress: CGFloat = 0.25 {
         didSet {
             circularProgress = -π / 2 + 2 * π * linearProgress
         }
@@ -40,28 +41,38 @@ class SKProgressView: UIView {
     
     private var circularProgress: CGFloat = 0 {
         didSet {
-            print(circularProgress)
             self.setNeedsDisplay()
         }
     }
 
+    static let lineStepSize = CGSize(width: 1.25, height: 15)
+    
     let gradientLayer = CAGradientLayer()
     let progressShapeLayer = CAShapeLayer()
     let endCircle = CAShapeLayer()
     let maskEndCircle = CALayer()
-    let insidePadding: CGFloat = 16
+    let insidePadding: CGFloat = lineStepSize.height * 2 + 26
+    let numberOfSteps: CGFloat = 70
+    
+    //font
+    let ultraLightfont = "HelveticaNeue-UltraLight"
+    let Lightfont = "HelveticaNeue-Light"
     
     // Basic Colors
-    let insideCirleFillColor = UIColor ( red: 0.0696, green: 0.1111, blue: 0.157, alpha: 0.7 )
+    let insideCirleFillColor = UIColor ( red: 0.086, green: 0.1492, blue: 0.2117, alpha: 1.0 )
     let circularStrokePathColor = UIColor ( red: 0.1405, green: 0.217, blue: 0.2959, alpha: 1.0 )
+    let stepDefaultColor = UIColor ( red: 0.3294, green: 0.3961, blue: 0.4471, alpha: 1.0 )
     let textColor = UIColor.whiteColor()
     let endCircleColor = UIColor.whiteColor()
     
     // Gradient Colors
-    let gradientStartColor = UIColor ( red: 0.7647, green: 0.098, blue: 0.0, alpha: 1.0 )
-    let gradientMidColor = UIColor ( red: 1.0, green: 0.8588, blue: 0.0039, alpha: 1.0 )
-    let gradientEndColor = UIColor ( red: 0.0235, green: 0.8667, blue: 0.1412, alpha: 1.0 )
+    let gradientStartColor = UIColor ( red: 0.3681, green: 0.5123, blue: 0.4753, alpha: 1.0 )
+    let gradientMidColor = UIColor ( red: 0.674, green: 0.9678, blue: 0.5098, alpha: 1.0 )
+    let gradientEndColor = UIColor ( red: 0.702, green: 1.0, blue: 0.3624, alpha: 1.0 )
+    var isFirstRun = true
 
+    // MARK:- Initializers
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
     
@@ -73,6 +84,8 @@ class SKProgressView: UIView {
         
         setUpView()
     }
+    
+    // MARK:- View setup
     
     func setUpView() {
         self.backgroundColor = UIColor.clearColor()
@@ -86,6 +99,8 @@ class SKProgressView: UIView {
         maskEndCircle.backgroundColor = endCircleColor.CGColor
         layer.addSublayer(maskEndCircle)
     }
+    
+    // MARK:- Gradient Background
     
     func addgradientBackGround() {
         /*
@@ -104,7 +119,7 @@ class SKProgressView: UIView {
         secondHalfGradient.colors = [gradientStartColor.CGColor, gradientMidColor.CGColor]
         firstHalfGradient.colors = [gradientEndColor.CGColor, gradientMidColor.CGColor]
 
-        secondHalfGradient.locations = [0, 1]
+        secondHalfGradient.locations = [0, 0.9]
         firstHalfGradient.locations = [0, 1]
 
         gradientLayer.addSublayer(firstHalfGradient)
@@ -121,6 +136,8 @@ class SKProgressView: UIView {
         let width = self.bounds.width > self.bounds.height ? self.bounds.height : self.bounds.width
         squareBounds = CGRect(origin: CGPointZero, size: CGSize(width: width, height: width))
     }
+    
+    // MARK:- Drawing function
     
     override func drawRect(rect: CGRect) {
        super.drawRect(rect)
@@ -194,24 +211,76 @@ class SKProgressView: UIView {
         
         CGContextRestoreGState(ctx)
         addText(String(Int(linearProgress * 100)))
+        
+        /*
+         Progress Steps Around the Circle
+         */
+        createProgressStepsAroundCircle(center)
     }
     
+    // MARK:- Steps around circle
+    
+    func createProgressStepsAroundCircle(center: CGPoint) {
+        if isFirstRun {
+            isFirstRun = false
+            for i in 0...Int(numberOfSteps - 1) {
+                let lineStep = CAReplicatorLayer()
+                steps.append(lineStep)
+                lineStep.frame = CGRect(origin: CGPoint(x: bounds.width / 2 - SKProgressView.lineStepSize.width / 2, y: center.y - SKProgressView.lineStepSize.height / 2), size: SKProgressView.lineStepSize)
+                lineStep.backgroundColor = stepDefaultColor.CGColor
+                //TODO: Anchor point to be make dynamic
+                // Anchor point: Hit and trail :P
+                lineStep.anchorPoint = CGPoint(x: 0, y: 8)
+                lineStep.transform = CATransform3DMakeRotation(CGFloat(i) * π / 180 * (360 / numberOfSteps), 0, 0, 1)
+                self.layer.addSublayer(lineStep)
+            }
+        }
+        
+        let completedSteps = Int((numberOfSteps - 1) * linearProgress)
+        
+        for incomplete in completedSteps...Int(numberOfSteps - 1) {
+            steps[incomplete].backgroundColor = stepDefaultColor.CGColor
+        }
+        
+        for complete in 0...completedSteps {
+            steps[complete].backgroundColor = gradientEndColor.CGColor
+        }
+        if linearProgress == 0 {
+            steps.first!.backgroundColor = stepDefaultColor.CGColor
+        }
+    }
+    
+    // MARK:- Text inside Circle
     
     func addText(text: String) {
+        //-------------- Progress text
         let myString: NSString = text as NSString
-        var attrib = [NSFontAttributeName: UIFont.boldSystemFontOfSize(25),
+        var attrib = [NSFontAttributeName: UIFont(name: ultraLightfont, size: 65)!,
                       NSForegroundColorAttributeName: textColor]
         let size: CGSize = myString.sizeWithAttributes(attrib)
+        let style = NSMutableParagraphStyle()
+        style.alignment = NSTextAlignment.Center
         
         var rect = CGRect(origin: CGPoint(x: self.bounds.width / 2 - size.width / 2, y: self.bounds.height / 2 - size.height / 2), size: size)
         text.drawInRect(rect, withAttributes: attrib)
         
-        // "/ 100"
-        attrib = [NSFontAttributeName: UIFont.systemFontOfSize(12),
-                  NSForegroundColorAttributeName: textColor]
-        let newSize = "/ 100 ".sizeWithAttributes(attrib)
-        rect = CGRect(origin: CGPoint(x: self.bounds.width / 2 - newSize.width / 2, y: self.bounds.height / 2 + size.height / 2 + 2), size: newSize)
-        "/ 100".drawInRect(rect, withAttributes: attrib)
+        //-------------- "/ 100"
+        attrib = [NSFontAttributeName: UIFont(name: Lightfont, size: 18)!,
+                  NSForegroundColorAttributeName: textColor,
+                  NSParagraphStyleAttributeName: style]
+        
+        var newSize = "/ 100 ".sizeWithAttributes(attrib)
+        rect = CGRect(origin: CGPoint(x: self.bounds.width / 2 - newSize.width / 2, y: self.bounds.height / 2 + size.height / 2.2), size: newSize)
+        "/100".drawInRect(rect, withAttributes: attrib)
+        
+        //------------- "Wholeness Score"
+        attrib = [NSFontAttributeName: UIFont(name: ultraLightfont, size: 18)!,
+                  NSForegroundColorAttributeName: textColor,
+                  NSParagraphStyleAttributeName: style]
+        
+        newSize = "Wholeness \n Score".sizeWithAttributes(attrib)
+        rect = CGRect(origin: CGPoint(x: self.bounds.width / 2 - newSize.width / 2, y: newSize.height * 1.25), size: newSize)
+        "Wholeness \n Score".drawInRect(rect, withAttributes: attrib)
     }
     
     override func layoutSubviews() {
