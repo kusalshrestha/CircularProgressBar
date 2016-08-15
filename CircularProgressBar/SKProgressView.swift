@@ -27,6 +27,8 @@ class SKProgressView: UIView {
 
     var squareBounds = CGRectZero
     var steps = [CAReplicatorLayer]()
+    var title = ""
+    var showStepsAroundCircle = false
     var progressBarWidth: CGFloat = 5 {
         didSet {
             self.setNeedsDisplay()
@@ -66,9 +68,9 @@ class SKProgressView: UIView {
     let endCircleColor = UIColor.whiteColor()
     
     // Gradient Colors
-    let gradientStartColor = UIColor ( red: 0.3681, green: 0.5123, blue: 0.4753, alpha: 1.0 )
-    let gradientMidColor = UIColor ( red: 0.674, green: 0.9678, blue: 0.5098, alpha: 1.0 )
-    let gradientEndColor = UIColor ( red: 0.702, green: 1.0, blue: 0.3624, alpha: 1.0 )
+    var gradientStartColor = UIColor ( red: 0.3681, green: 0.5123, blue: 0.4753, alpha: 1.0 )
+    var gradientMidColor = UIColor ( red: 0.674, green: 0.9678, blue: 0.5098, alpha: 1.0 )
+    var gradientEndColor = UIColor ( red: 0.702, green: 1.0, blue: 0.3624, alpha: 1.0 )
     var isFirstRun = true
 
     // MARK:- Initializers
@@ -215,7 +217,9 @@ class SKProgressView: UIView {
         /*
          Progress Steps Around the Circle
          */
-        createProgressStepsAroundCircle(center)
+        if showStepsAroundCircle {
+            createProgressStepsAroundCircle(center)
+        }
     }
     
     // MARK:- Steps around circle
@@ -232,6 +236,8 @@ class SKProgressView: UIView {
                 // Anchor point: Hit and trail :P
                 lineStep.anchorPoint = CGPoint(x: 0, y: 8)
                 lineStep.transform = CATransform3DMakeRotation(CGFloat(i) * π / 180 * (360 / numberOfSteps), 0, 0, 1)
+                lineStep.shouldRasterize = true
+                lineStep.rasterizationScale = 1
                 self.layer.addSublayer(lineStep)
             }
         }
@@ -278,7 +284,7 @@ class SKProgressView: UIView {
                   NSForegroundColorAttributeName: textColor,
                   NSParagraphStyleAttributeName: style]
         
-        newSize = "Wholeness \n Score".sizeWithAttributes(attrib)
+        newSize = title.sizeWithAttributes(attrib)
         rect = CGRect(origin: CGPoint(x: self.bounds.width / 2 - newSize.width / 2, y: newSize.height * 1.25), size: newSize)
         "Wholeness \n Score".drawInRect(rect, withAttributes: attrib)
     }
