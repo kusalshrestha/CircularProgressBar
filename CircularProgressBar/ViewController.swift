@@ -16,7 +16,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         progressView.linearProgress = 0
-        progressView.title = "Wholeness \n Score"
+        progressView.title = "SKProgress \n Bar"
 //        progressView.showStepsAroundCircle = true
         progressView.gradientStartColor = UIColor ( red: 0.3681, green: 0.5123, blue: 0.4753, alpha: 1.0 )
         progressView.gradientMidColor = UIColor ( red: 0.674, green: 0.9678, blue: 0.5098, alpha: 1.0 )

@@ -27,8 +27,14 @@ class SKProgressView: UIView {
 
     var squareBounds = CGRectZero
     var steps = [CAReplicatorLayer]()
-    var title = ""
     var showStepsAroundCircle = false
+    
+    var title = "" {
+        didSet {
+            self.setNeedsDisplay()
+        }
+    }
+    
     var progressBarWidth: CGFloat = 5 {
         didSet {
             self.setNeedsDisplay()
@@ -309,7 +315,7 @@ class SKProgressView: UIView {
         
         newSize = title.sizeWithAttributes(attrib)
         rect = CGRect(origin: CGPoint(x: self.bounds.width / 2 - newSize.width / 2, y: newSize.height * 1.25), size: newSize)
-        "Wholeness \n Score".drawInRect(rect, withAttributes: attrib)
+        title.drawInRect(rect, withAttributes: attrib)
     }
     
     override func layoutSubviews() {
