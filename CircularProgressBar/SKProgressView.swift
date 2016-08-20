@@ -56,6 +56,9 @@ class SKProgressView: UIView {
     let insidePadding: CGFloat = lineStepSize.height * 2 + 26
     let numberOfSteps: CGFloat = 70
     
+    let firstHalfGradient = CAGradientLayer()
+    let secondHalfGradient = CAGradientLayer()
+
     //font
     let ultraLightfont = "HelveticaNeue-UltraLight"
     let Lightfont = "HelveticaNeue-Light"
@@ -68,9 +71,24 @@ class SKProgressView: UIView {
     let endCircleColor = UIColor.whiteColor()
     
     // Gradient Colors
-    var gradientStartColor = UIColor ( red: 0.3681, green: 0.5123, blue: 0.4753, alpha: 1.0 )
-    var gradientMidColor = UIColor ( red: 0.674, green: 0.9678, blue: 0.5098, alpha: 1.0 )
-    var gradientEndColor = UIColor ( red: 0.702, green: 1.0, blue: 0.3624, alpha: 1.0 )
+    var gradientStartColor = UIColor ( red: 0.2975, green: 0.4105, blue: 0.9985, alpha: 1.0 ) {
+        didSet {
+            addGradientColorsInLayers()
+        }
+    }
+    
+    var gradientMidColor = UIColor ( red: 0.6214, green: 0.964, blue: 0.9994, alpha: 1.0 ) {
+        didSet {
+            addGradientColorsInLayers()
+        }
+    }
+
+    var gradientEndColor = UIColor ( red: 0.6532, green: 1.0, blue: 0.9995, alpha: 1.0 ) {
+        didSet {
+            addGradientColorsInLayers()
+        }
+    }
+
     var isFirstRun = true
 
     // MARK:- Initializers
@@ -113,14 +131,14 @@ class SKProgressView: UIView {
          
          */
         
-        let firstHalfGradient = CAGradientLayer()
-        let secondHalfGradient = CAGradientLayer()
+//        let firstHalfGradient = CAGradientLayer()
+//        let secondHalfGradient = CAGradientLayer()
         
         firstHalfGradient.frame = CGRect(origin: CGPointZero, size: CGSize(width: squareBounds.width / 2, height: squareBounds.height))
         secondHalfGradient.frame = CGRect(origin: CGPoint(x: squareBounds.width / 2, y: 0), size: CGSize(width: squareBounds.width / 2, height: squareBounds.height))
-        secondHalfGradient.colors = [gradientStartColor.CGColor, gradientMidColor.CGColor]
-        firstHalfGradient.colors = [gradientEndColor.CGColor, gradientMidColor.CGColor]
 
+        addGradientColorsInLayers()
+        
         secondHalfGradient.locations = [0, 0.9]
         firstHalfGradient.locations = [0, 1]
 
@@ -132,6 +150,11 @@ class SKProgressView: UIView {
 
         progressShapeLayer.fillColor = UIColor.clearColor().CGColor
         progressShapeLayer.strokeColor = UIColor.whiteColor().CGColor
+    }
+    
+    func addGradientColorsInLayers() {
+        secondHalfGradient.colors = [gradientStartColor.CGColor, gradientMidColor.CGColor]
+        firstHalfGradient.colors = [gradientEndColor.CGColor, gradientMidColor.CGColor]
     }
  
     func makeASquareBounds() {
@@ -261,7 +284,7 @@ class SKProgressView: UIView {
     func addText(text: String) {
         //-------------- Progress text
         let myString: NSString = text as NSString
-        var attrib = [NSFontAttributeName: UIFont(name: ultraLightfont, size: 65)!,
+        var attrib = [NSFontAttributeName: UIFont(name: ultraLightfont, size: bounds.width / 3.75)!,
                       NSForegroundColorAttributeName: textColor]
         let size: CGSize = myString.sizeWithAttributes(attrib)
         let style = NSMutableParagraphStyle()
@@ -271,7 +294,7 @@ class SKProgressView: UIView {
         text.drawInRect(rect, withAttributes: attrib)
         
         //-------------- "/ 100"
-        attrib = [NSFontAttributeName: UIFont(name: Lightfont, size: 18)!,
+        attrib = [NSFontAttributeName: UIFont(name: Lightfont, size: bounds.width / 13.5)!,
                   NSForegroundColorAttributeName: textColor,
                   NSParagraphStyleAttributeName: style]
         
@@ -280,7 +303,7 @@ class SKProgressView: UIView {
         "/100".drawInRect(rect, withAttributes: attrib)
         
         //------------- "Wholeness Score"
-        attrib = [NSFontAttributeName: UIFont(name: ultraLightfont, size: 18)!,
+        attrib = [NSFontAttributeName: UIFont(name: ultraLightfont, size: bounds.width / 13.75)!,
                   NSForegroundColorAttributeName: textColor,
                   NSParagraphStyleAttributeName: style]
         
